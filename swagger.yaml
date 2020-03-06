@@ -1,0 +1,441 @@
+swagger: "2.0"
+info:
+  description: "This is a sample server Petstore server.  You can find out more about     Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).      For this sample, you can use the api key `special-key` to test the authorization     filters."
+  version: "1.0.0"
+  title: "Swagger Petstore"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "apiteam@swagger.io"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "petstore.swagger.io"
+basePath: "/v2"
+tags:
+- name: "games"
+  description: "list of your gemes"
+- name: "game"
+  description: "game constractoin, list of location and parameters, options of end game"
+- name: "location"
+  description: "everything about the location"
+schemes:
+- "https"
+- "http"
+paths:
+  /games:
+    get:
+      tags:
+      - "games"
+      summary: "show a list of games"
+      description: ""
+      operationId: "getGameList"
+      produces:
+       - "aplication/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/games"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Game not found"
+      security:
+      - api_key: []
+    post:
+      tags:
+      - "games"
+      summary: "Create a new game"
+      description: ""
+      operationId: "addGame"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Game that needs to be added to the list"
+        required: true
+        schema:
+          $ref: "#/definitions/game"
+      responses:
+        405:
+          description: "Invalid input"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+  /geames/{gameId}:
+    delete:
+      tags:
+      - "games"
+      summary: "Deletes the game"
+      description: ""
+      operationId: "deleteGame"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "api_key"
+        in: "header"
+        required: false
+        type: "string"
+      - name: "gameId"
+        in: "path"
+        description: "game id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Pet not found"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+        
+  /game/{gameId}:
+    get:
+      tags:
+      - "game"
+      summary: "Find game by ID"
+      description: "Returns a single game"
+      operationId: "getGameById"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "gameId"
+        in: "path"
+        description: "ID of game to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/game"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Game not found"
+      security:
+      - api_key: []
+    put:
+      tags:
+      - "game"
+      summary: "Updates a game in the base with form data"
+      description: ""
+      operationId: "updateGameWithForm"
+      consumes:
+      - "application/x-www-form-urlencoded"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "gameId"
+        in: "path"
+        description: "ID of game that needs to be updated"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "name"
+        in: "formData"
+        description: "Updated name of the game"
+        required: false
+        type: "string"
+      - name: "parameters"
+        in: "formData"
+        description: "Updated parameters of the game"
+        required: false
+        type: "string"
+      - name: "END"
+        in: "formData"
+        description: "Updated END of the game"
+        required: false
+        type: "string"
+      responses:
+        405:
+          description: "Invalid input"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+    
+  /game/{gameId}/location:
+    post:
+      tags:
+      - "location"
+      summary: "create new location"
+      description: ""
+      operationId: "createLocation"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "gameId"
+        in: "path"
+        description: "Game Id"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body"
+        name: "body"
+        description: "new location for the game"
+        required: true
+        schema:
+          $ref: "#/definitions/locations"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/game"
+        400:
+          description: "Invalid Order"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+        
+  /game/{gameId}/location/{locationId}:
+    get:
+      tags:
+      - "location"
+      summary: "Returns pet inventories by status"
+      description: "Returns a map of status codes to quantities"
+      operationId: "getInventory"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "gameId"
+        in: "path"
+        description: "id of the game to which the location belongs"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "locationId"
+        in: "path"
+        description: "Id of location"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "object"
+            additionalProperties:
+              type: "integer"
+              format: "int32"
+      security:
+      - api_key: []
+    put:
+      tags:
+      - "location"
+      summary: "Updates a location in the base with form data"
+      description: ""
+      operationId: "updateLocation"
+      consumes:
+      - "application/x-www-form-urlencoded"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "gameId"
+        in: "path"
+        description: "id of the game to which the location belongs"
+        required: true
+        type: "integer"
+        format: :"int64"
+      - name: "locationId"
+        in: "path"
+        description: "ID of location that needs to be updated"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "name"
+        in: "formData"
+        description: "Update name of the location"
+        required: false
+        type: "string"
+      - name: "tech_name"
+        in: "formData"
+        description: "Update tech_name of the location"
+        required: false
+        type: "string"
+      - name: "action"
+        in: "formData"
+        description: "Update action in this location"
+        required: false
+        type: "string"
+      - name: "parameters_visibility"
+        in: "formData"
+        description: "Update visibility of parameters in this location"
+        required: false
+        type: "string"
+      - name: "parameters_changes"
+        in: "formData"
+        description: "Update changes of parameters in this location"
+        required: false
+        type: "string"
+      - name: "conditions"
+        in: "formData"
+        description: "conditions of location"
+        type: "string"
+      responses:
+        405:
+          description: "Invalid input"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+    delete:
+      tags:
+      - "location"
+      summary: "deletes the location"
+      description: ""
+      operationId: "DeleteLocation"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "gameId"
+        in: "path"
+        description: "Game Id"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "locationId"
+        in: "path"
+        description: "id of location"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/games"
+        400:
+          description: "Invalid Game"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+
+  
+securityDefinitions:
+  petstore_auth:
+    type: "oauth2"
+    authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
+    flow: "implicit"
+    scopes:
+      write:pets: "modify pets in your account"
+      read:pets: "read your pets"
+  api_key:
+    type: "apiKey"
+    name: "api_key"
+    in: "header"
+definitions:
+  games:
+    type: "array"
+    items:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+        name:
+          type: "string"
+        description:
+          type: "string"
+        date_create:
+          type: "string"
+          format: "date"
+          
+  game:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      parameters:
+        $ref: "#/definitions/parameters"
+      autor:
+        type: "string"
+      end:
+        type: "string"
+      status:
+        type: "string"
+        description: "Game Status"
+        enum:
+        - "placed"
+        - "in developing"
+      date_create:
+        type: "string"
+        format: "date"
+        
+  locations:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      teh_name:
+        type: "string"
+      actions:
+        type: "array"
+        items:
+          $ref: "#/definitions/actions"
+      visability_of_params:
+        type: "string"
+      change_params:
+        type: "string"
+      conditions:
+        type: "string"
+      started:
+        type: "boolean"
+        default: false"
+        
+  actions:
+    type: "object"
+    properties:
+      text:
+        type: "string"
+      move:
+        type: "integer"
+        format: "int64"
+        description: "location_id"
+        
+  parameters:
+    type: "array"
+    items:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+        name:
+          type: "string"
+        type:
+          type: "string"
+        value:
+          type: "string"
+        visibility:
+          type: "boolean"
+          
+  ApiResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
